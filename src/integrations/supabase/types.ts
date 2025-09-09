@@ -14,7 +14,102 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      course_guidance: {
+        Row: {
+          career_options: Json | null
+          colleges: Json | null
+          course_name: string
+          created_at: string
+          id: string
+          roadmap: Json | null
+          scholarships: Json | null
+          updated_at: string
+        }
+        Insert: {
+          career_options?: Json | null
+          colleges?: Json | null
+          course_name: string
+          created_at?: string
+          id?: string
+          roadmap?: Json | null
+          scholarships?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          career_options?: Json | null
+          colleges?: Json | null
+          course_name?: string
+          created_at?: string
+          id?: string
+          roadmap?: Json | null
+          scholarships?: Json | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          class: string | null
+          created_at: string
+          id: string
+          interests: string[] | null
+          location: string | null
+          name: string | null
+          passions: string[] | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          class?: string | null
+          created_at?: string
+          id?: string
+          interests?: string[] | null
+          location?: string | null
+          name?: string | null
+          passions?: string[] | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          class?: string | null
+          created_at?: string
+          id?: string
+          interests?: string[] | null
+          location?: string | null
+          name?: string | null
+          passions?: string[] | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      quiz_results: {
+        Row: {
+          ai_analysis: Json | null
+          answers: Json
+          created_at: string
+          id: string
+          recommended_courses: string[] | null
+          user_id: string
+        }
+        Insert: {
+          ai_analysis?: Json | null
+          answers: Json
+          created_at?: string
+          id?: string
+          recommended_courses?: string[] | null
+          user_id: string
+        }
+        Update: {
+          ai_analysis?: Json | null
+          answers?: Json
+          created_at?: string
+          id?: string
+          recommended_courses?: string[] | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
