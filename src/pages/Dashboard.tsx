@@ -4,13 +4,14 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { GraduationCap, BookOpen, Users, Trophy, Brain, LogOut } from 'lucide-react';
+import { GraduationCap, BookOpen, Users, Trophy, Brain, LogOut, ArrowRight, Building, Award, TrendingUp, Lock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { User } from '@supabase/supabase-js';
 
 const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [quizCompleted, setQuizCompleted] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -20,6 +21,15 @@ const Dashboard = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
         setUser(session.user);
+        
+        // Check if user has completed quiz
+        const { data: quizData } = await supabase
+          .from('quiz_results')
+          .select('id')
+          .eq('user_id', session.user.id)
+          .limit(1);
+        
+        setQuizCompleted(quizData && quizData.length > 0);
       } else {
         navigate('/');
       }
@@ -121,34 +131,125 @@ const Dashboard = () => {
           </CardContent>
         </Card>
 
-        {/* Main Actions */}
+        {/* Main Actions - Updated with unlock system */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          <Card className="hover:shadow-elegant transition-shadow cursor-pointer" onClick={startQuiz}>
+          {/* AI Quiz Card */}
+          <Card 
+            className={`hover:shadow-elegant transition-shadow cursor-pointer ${
+              quizCompleted ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-200' : ''
+            }`} 
+            onClick={() => navigate('/quiz')}
+          >
             <CardHeader>
-              <Brain className="h-12 w-12 text-primary mb-2" />
-              <CardTitle>Start AI Quiz</CardTitle>
+              <Brain className={`h-12 w-12 mb-2 ${quizCompleted ? 'text-green-600' : 'text-primary'}`} />
+              <CardTitle className={quizCompleted ? 'text-green-600' : ''}>
+                AI Aptitude Quiz {quizCompleted && '✓'}
+              </CardTitle>
               <CardDescription>
-                Take our intelligent assessment to get personalized course recommendations
+                {quizCompleted ? 'Quiz completed! View results' : 'Take our intelligent assessment to get personalized course recommendations'}
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="quiz" className="w-full">
-                Begin Assessment
+              <Button className="w-full">
+                {quizCompleted ? 'View Results' : 'Begin Assessment'}
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* College Finder Card */}
+          <Card 
+            className={`hover:shadow-elegant transition-shadow ${
+              quizCompleted ? 'cursor-pointer' : 'opacity-60'
+            }`}
+            onClick={quizCompleted ? () => navigate('/colleges') : undefined}
+          >
+            <CardHeader>
+              <Building className={`h-12 w-12 mb-2 ${quizCompleted ? 'text-primary' : 'text-muted-foreground'}`} />
+              <CardTitle className={quizCompleted ? '' : 'text-muted-foreground'}>
+                College Finder
+              </CardTitle>
+              <CardDescription>
+                Find colleges offering your recommended courses
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {quizCompleted ? (
+                <Button className="w-full">
+                  Find Colleges
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              ) : (
+                <Button variant="outline" disabled className="w-full">
+                  <Lock className="mr-2 h-4 w-4" />
+                  Complete Quiz First
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Scholarship Hub Card */}
+          <Card 
+            className={`hover:shadow-elegant transition-shadow ${
+              quizCompleted ? 'cursor-pointer' : 'opacity-60'
+            }`}
+            onClick={quizCompleted ? () => navigate('/scholarships') : undefined}
+          >
+            <CardHeader>
+              <Trophy className={`h-12 w-12 mb-2 ${quizCompleted ? 'text-primary' : 'text-muted-foreground'}`} />
+              <CardTitle className={quizCompleted ? '' : 'text-muted-foreground'}>
+                Scholarship Hub
+              </CardTitle>
+              <CardDescription>
+                Discover scholarships for your chosen courses
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {quizCompleted ? (
+                <Button className="w-full">
+                  Find Scholarships
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              ) : (
+                <Button variant="outline" disabled className="w-full">
+                  <Lock className="mr-2 h-4 w-4" />
+                  Complete Quiz First
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Additional Features (Coming Soon) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          <Card className="opacity-60">
+            <CardHeader>
+              <BookOpen className="h-12 w-12 text-muted-foreground mb-2" />
+              <CardTitle className="text-muted-foreground">Course Roadmap</CardTitle>
+              <CardDescription>
+                Detailed curriculum and semester plans
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button variant="outline" disabled className="w-full">
+                <Lock className="mr-2 h-4 w-4" />
+                Coming Soon
               </Button>
             </CardContent>
           </Card>
 
           <Card className="opacity-60">
             <CardHeader>
-              <BookOpen className="h-12 w-12 text-muted-foreground mb-2" />
-              <CardTitle className="text-muted-foreground">Course Recommendations</CardTitle>
+              <TrendingUp className="h-12 w-12 text-muted-foreground mb-2" />
+              <CardTitle className="text-muted-foreground">Career Insights</CardTitle>
               <CardDescription>
-                View your personalized course suggestions (complete quiz first)
+                Industry trends and salary insights
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Button variant="outline" disabled className="w-full">
-                Locked
+                <Lock className="mr-2 h-4 w-4" />
+                Coming Soon
               </Button>
             </CardContent>
           </Card>
@@ -156,29 +257,15 @@ const Dashboard = () => {
           <Card className="opacity-60">
             <CardHeader>
               <Users className="h-12 w-12 text-muted-foreground mb-2" />
-              <CardTitle className="text-muted-foreground">College Finder</CardTitle>
+              <CardTitle className="text-muted-foreground">Mentorship</CardTitle>
               <CardDescription>
-                Find colleges offering your recommended courses
+                Connect with industry experts
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Button variant="outline" disabled className="w-full">
-                Locked
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="opacity-60">
-            <CardHeader>
-              <Trophy className="h-12 w-12 text-muted-foreground mb-2" />
-              <CardTitle className="text-muted-foreground">Scholarship Hub</CardTitle>
-              <CardDescription>
-                Discover scholarships for your chosen courses
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button variant="outline" disabled className="w-full">
-                Locked
+                <Lock className="mr-2 h-4 w-4" />
+                Coming Soon
               </Button>
             </CardContent>
           </Card>
