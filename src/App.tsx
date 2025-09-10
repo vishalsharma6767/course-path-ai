@@ -9,6 +9,13 @@ import Quiz from "./pages/Quiz";
 import Results from "./pages/Results";
 import CollegeFinder from "./pages/CollegeFinder";
 import Scholarships from "./pages/Scholarships";
+import CareerRoadmaps from "./pages/CareerRoadmaps";
+import PassionStudies from "./pages/PassionStudies";
+import StressCheck from "./pages/StressCheck";
+import ParentZone from "./pages/ParentZone";
+import MentorshipWebinars from "./pages/MentorshipWebinars";
+import SmartDashboard from "./pages/SmartDashboard";
+import OfflineMode from "./pages/OfflineMode";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +33,13 @@ const App = () => (
           <Route path="/results" element={<Results />} />
           <Route path="/colleges" element={<CollegeFinder />} />
           <Route path="/scholarships" element={<Scholarships />} />
+          <Route path="/career-roadmaps" element={<CareerRoadmaps />} />
+          <Route path="/passion-studies" element={<PassionStudies />} />
+          <Route path="/stress-check" element={<StressCheck />} />
+          <Route path="/parent-zone" element={<ParentZone />} />
+          <Route path="/mentorship" element={<MentorshipWebinars />} />
+          <Route path="/smart-dashboard" element={<SmartDashboard />} />
+          <Route path="/offline-mode" element={<OfflineMode />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

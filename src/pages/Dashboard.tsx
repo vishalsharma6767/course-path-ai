@@ -191,116 +191,116 @@ const Dashboard = () => {
 
         </div>
 
-        {/* Additional Features (Coming Soon) */}
+        {/* All Features Now Working */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          <Card className="opacity-60">
+          <Card className="hover:shadow-elegant transition-shadow cursor-pointer" onClick={() => navigate('/career-roadmaps')}>
             <CardHeader>
-              <BookOpen className="h-12 w-12 text-muted-foreground mb-2" />
-              <CardTitle className="text-muted-foreground">Career Roadmaps</CardTitle>
+              <BookOpen className="h-12 w-12 text-primary mb-2" />
+              <CardTitle>Career Roadmaps</CardTitle>
               <CardDescription>
                 Visual step-by-step paths for jobs, exams, and higher studies
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" disabled className="w-full">
-                <Lock className="mr-2 h-4 w-4" />
-                Coming Soon
+              <Button className="w-full">
+                Explore Roadmaps
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </CardContent>
           </Card>
 
-          <Card className="opacity-60">
+          <Card className="hover:shadow-elegant transition-shadow cursor-pointer" onClick={() => navigate('/passion-studies')}>
             <CardHeader>
-              <Users className="h-12 w-12 text-muted-foreground mb-2" />
-              <CardTitle className="text-muted-foreground">Passion + Studies Support</CardTitle>
+              <Users className="h-12 w-12 text-primary mb-2" />
+              <CardTitle>Passion + Studies Support</CardTitle>
               <CardDescription>
                 Balances academics with hobbies, sports, or arts
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" disabled className="w-full">
-                <Lock className="mr-2 h-4 w-4" />
-                Coming Soon
+              <Button className="w-full">
+                Balance Life
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </CardContent>
           </Card>
 
-          <Card className="opacity-60">
+          <Card className="hover:shadow-elegant transition-shadow cursor-pointer" onClick={() => navigate('/stress-check')}>
             <CardHeader>
-              <Brain className="h-12 w-12 text-muted-foreground mb-2" />
-              <CardTitle className="text-muted-foreground">AI Stress Check</CardTitle>
+              <Brain className="h-12 w-12 text-primary mb-2" />
+              <CardTitle>AI Stress Check</CardTitle>
               <CardDescription>
                 Mood detection, relaxation tips, and counselor access
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" disabled className="w-full">
-                <Lock className="mr-2 h-4 w-4" />
-                Coming Soon
+              <Button className="w-full">
+                Check Wellness
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </CardContent>
           </Card>
 
-          <Card className="opacity-60">
+          <Card className="hover:shadow-elegant transition-shadow cursor-pointer" onClick={() => navigate('/parent-zone')}>
             <CardHeader>
-              <Users className="h-12 w-12 text-muted-foreground mb-2" />
-              <CardTitle className="text-muted-foreground">Parent Zone</CardTitle>
+              <Users className="h-12 w-12 text-primary mb-2" />
+              <CardTitle>Parent Zone</CardTitle>
               <CardDescription>
                 Simple guides and success stories for parents
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" disabled className="w-full">
-                <Lock className="mr-2 h-4 w-4" />
-                Coming Soon
+              <Button className="w-full">
+                Parent Resources
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </CardContent>
           </Card>
 
-          <Card className="opacity-60">
+          <Card className="hover:shadow-elegant transition-shadow cursor-pointer" onClick={() => navigate('/mentorship')}>
             <CardHeader>
-              <Users className="h-12 w-12 text-muted-foreground mb-2" />
-              <CardTitle className="text-muted-foreground">Mentorship & Webinars</CardTitle>
+              <Users className="h-12 w-12 text-primary mb-2" />
+              <CardTitle>Mentorship & Webinars</CardTitle>
               <CardDescription>
                 Connects students with alumni, teachers, and experts
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" disabled className="w-full">
-                <Lock className="mr-2 h-4 w-4" />
-                Coming Soon
+              <Button className="w-full">
+                Find Mentors
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </CardContent>
           </Card>
 
-          <Card className="opacity-60">
+          <Card className="hover:shadow-elegant transition-shadow cursor-pointer" onClick={() => navigate('/smart-dashboard')}>
             <CardHeader>
-              <TrendingUp className="h-12 w-12 text-muted-foreground mb-2" />
-              <CardTitle className="text-muted-foreground">Smart Dashboard</CardTitle>
+              <TrendingUp className="h-12 w-12 text-primary mb-2" />
+              <CardTitle>Smart Dashboard</CardTitle>
               <CardDescription>
                 Personalized reminders, resources, and progress tracking
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" disabled className="w-full">
-                <Lock className="mr-2 h-4 w-4" />
-                Coming Soon
+              <Button className="w-full">
+                View Analytics
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </CardContent>
           </Card>
 
-          <Card className="opacity-60">
+          <Card className="hover:shadow-elegant transition-shadow cursor-pointer" onClick={() => navigate('/offline-mode')}>
             <CardHeader>
-              <Globe className="h-12 w-12 text-muted-foreground mb-2" />
-              <CardTitle className="text-muted-foreground">Offline Mode</CardTitle>
+              <Globe className="h-12 w-12 text-primary mb-2" />
+              <CardTitle>Offline Mode</CardTitle>
               <CardDescription>
                 Access core features with low or no internet
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" disabled className="w-full">
-                <Lock className="mr-2 h-4 w-4" />
-                Coming Soon
+              <Button className="w-full">
+                Go Offline
+                <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </CardContent>
           </Card>
