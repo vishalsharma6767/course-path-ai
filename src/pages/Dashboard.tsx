@@ -4,9 +4,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { GraduationCap, BookOpen, Users, Trophy, Brain, LogOut, ArrowRight, Building, Award, TrendingUp, Lock } from 'lucide-react';
+import { GraduationCap, BookOpen, Users, Trophy, Brain, LogOut, ArrowRight, Building, Award, TrendingUp, Lock, MapPin, FileText, Briefcase, Globe, Shield } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import type { User } from '@supabase/supabase-js';
+import AIMentorChatbot from '@/components/AIMentorChatbot';
 
 const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -227,7 +228,7 @@ const Dashboard = () => {
               <BookOpen className="h-12 w-12 text-muted-foreground mb-2" />
               <CardTitle className="text-muted-foreground">Course Roadmap</CardTitle>
               <CardDescription>
-                Detailed curriculum and semester plans
+                Detailed semester plans & Indian curriculum
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -240,10 +241,10 @@ const Dashboard = () => {
 
           <Card className="opacity-60">
             <CardHeader>
-              <TrendingUp className="h-12 w-12 text-muted-foreground mb-2" />
-              <CardTitle className="text-muted-foreground">Career Insights</CardTitle>
+              <Shield className="h-12 w-12 text-muted-foreground mb-2" />
+              <CardTitle className="text-muted-foreground">Government Schemes</CardTitle>
               <CardDescription>
-                Industry trends and salary insights
+                NSP, PM-YASASVI & other government scholarships
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -256,10 +257,58 @@ const Dashboard = () => {
 
           <Card className="opacity-60">
             <CardHeader>
-              <Users className="h-12 w-12 text-muted-foreground mb-2" />
-              <CardTitle className="text-muted-foreground">Mentorship</CardTitle>
+              <MapPin className="h-12 w-12 text-muted-foreground mb-2" />
+              <CardTitle className="text-muted-foreground">Location Guide</CardTitle>
               <CardDescription>
-                Connect with industry experts
+                Best Indian cities for your chosen course
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button variant="outline" disabled className="w-full">
+                <Lock className="mr-2 h-4 w-4" />
+                Coming Soon
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="opacity-60">
+            <CardHeader>
+              <FileText className="h-12 w-12 text-muted-foreground mb-2" />
+              <CardTitle className="text-muted-foreground">Entrance Exam Prep</CardTitle>
+              <CardDescription>
+                JEE, NEET, GATE & other competitive exams
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button variant="outline" disabled className="w-full">
+                <Lock className="mr-2 h-4 w-4" />
+                Coming Soon
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="opacity-60">
+            <CardHeader>
+              <Briefcase className="h-12 w-12 text-muted-foreground mb-2" />
+              <CardTitle className="text-muted-foreground">Job Portal</CardTitle>
+              <CardDescription>
+                Government jobs, PSUs & private placements
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button variant="outline" disabled className="w-full">
+                <Lock className="mr-2 h-4 w-4" />
+                Coming Soon
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="opacity-60">
+            <CardHeader>
+              <Globe className="h-12 w-12 text-muted-foreground mb-2" />
+              <CardTitle className="text-muted-foreground">Study Abroad</CardTitle>
+              <CardDescription>
+                International opportunities for Indian students
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -275,30 +324,33 @@ const Dashboard = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-primary">500+</div>
-              <p className="text-sm text-muted-foreground">Courses Available</p>
+              <div className="text-2xl font-bold text-primary">2000+</div>
+              <p className="text-sm text-muted-foreground">Indian Colleges</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-secondary">1000+</div>
-              <p className="text-sm text-muted-foreground">Partner Colleges</p>
+              <div className="text-2xl font-bold text-secondary">50+</div>
+              <p className="text-sm text-muted-foreground">Government Schemes</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-accent">200+</div>
+              <div className="text-2xl font-bold text-accent">1000+</div>
               <p className="text-sm text-muted-foreground">Scholarships</p>
             </CardContent>
           </Card>
           <Card>
             <CardContent className="p-4 text-center">
-              <div className="text-2xl font-bold text-primary">95%</div>
-              <p className="text-sm text-muted-foreground">Success Rate</p>
+              <div className="text-2xl font-bold text-primary">28</div>
+              <p className="text-sm text-muted-foreground">States Covered</p>
             </CardContent>
           </Card>
         </div>
       </div>
+      
+      {/* AI Mentor Chatbot */}
+      <AIMentorChatbot />
     </div>
   );
 };
