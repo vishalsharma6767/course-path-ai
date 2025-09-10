@@ -91,30 +91,56 @@ serve(async (req) => {
     Ensure each recommendation is well-reasoned and matches the student's profile.
     `;
 
-    // Call OpenAI API
+    // Call OpenAI API with retry logic
     console.log('Calling OpenAI API...');
-    const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are an expert educational counselor. Always respond with valid JSON only.'
+    let openAIResponse;
+    let retryCount = 0;
+    const maxRetries = 3;
+    
+    while (retryCount < maxRetries) {
+      try {
+        openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${openAIApiKey}`,
+            'Content-Type': 'application/json',
           },
-          {
-            role: 'user',
-            content: prompt
-          }
-        ],
-        max_tokens: 1500,
-        temperature: 0.7,
-      }),
-    });
+          body: JSON.stringify({
+            model: 'gpt-4.1-2025-04-14',
+            messages: [
+              {
+                role: 'system',
+                content: 'You are an expert educational counselor. Always respond with valid JSON only.'
+              },
+              {
+                role: 'user',
+                content: prompt
+              }
+            ],
+            max_completion_tokens: 1500,
+            temperature: 0.7,
+          }),
+        });
+        
+        if (openAIResponse.ok) {
+          break; // Success, exit retry loop
+        } else if (openAIResponse.status === 429) {
+          // Rate limit, wait and retry
+          console.log(`Rate limited, retrying in ${(retryCount + 1) * 2} seconds...`);
+          await new Promise(resolve => setTimeout(resolve, (retryCount + 1) * 2000));
+          retryCount++;
+        } else {
+          // Other error, don't retry
+          break;
+        }
+      } catch (fetchError) {
+        console.error('Fetch error:', fetchError);
+        retryCount++;
+        if (retryCount < maxRetries) {
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+      }
+    }
 
     if (!openAIResponse.ok) {
       const errorText = await openAIResponse.text();
