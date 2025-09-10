@@ -168,16 +168,16 @@ const Dashboard = () => {
             <CardHeader>
               <Building className={`h-12 w-12 mb-2 ${quizCompleted ? 'text-primary' : 'text-muted-foreground'}`} />
               <CardTitle className={quizCompleted ? '' : 'text-muted-foreground'}>
-                College Finder
+                College & Scholarship Finder
               </CardTitle>
               <CardDescription>
-                Find colleges offering your recommended courses
+                Nearby options with eligibility and deadlines
               </CardDescription>
             </CardHeader>
             <CardContent>
               {quizCompleted ? (
                 <Button className="w-full">
-                  Find Colleges
+                  Find Colleges & Scholarships
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               ) : (
@@ -189,36 +189,6 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          {/* Scholarship Hub Card */}
-          <Card 
-            className={`hover:shadow-elegant transition-shadow ${
-              quizCompleted ? 'cursor-pointer' : 'opacity-60'
-            }`}
-            onClick={quizCompleted ? () => navigate('/scholarships') : undefined}
-          >
-            <CardHeader>
-              <Trophy className={`h-12 w-12 mb-2 ${quizCompleted ? 'text-primary' : 'text-muted-foreground'}`} />
-              <CardTitle className={quizCompleted ? '' : 'text-muted-foreground'}>
-                Scholarship Hub
-              </CardTitle>
-              <CardDescription>
-                Discover scholarships for your chosen courses
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {quizCompleted ? (
-                <Button className="w-full">
-                  Find Scholarships
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              ) : (
-                <Button variant="outline" disabled className="w-full">
-                  <Lock className="mr-2 h-4 w-4" />
-                  Complete Quiz First
-                </Button>
-              )}
-            </CardContent>
-          </Card>
         </div>
 
         {/* Additional Features (Coming Soon) */}
@@ -226,9 +196,9 @@ const Dashboard = () => {
           <Card className="opacity-60">
             <CardHeader>
               <BookOpen className="h-12 w-12 text-muted-foreground mb-2" />
-              <CardTitle className="text-muted-foreground">Course Roadmap</CardTitle>
+              <CardTitle className="text-muted-foreground">Career Roadmaps</CardTitle>
               <CardDescription>
-                Detailed semester plans & Indian curriculum
+                Visual step-by-step paths for jobs, exams, and higher studies
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -239,102 +209,76 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          <Card 
-            className={`hover:shadow-elegant transition-shadow ${
-              quizCompleted ? 'cursor-pointer' : 'opacity-60'
-            }`}
-            onClick={quizCompleted ? () => navigate('/government-schemes') : undefined}
-          >
+          <Card className="opacity-60">
             <CardHeader>
-              <Shield className={`h-12 w-12 mb-2 ${quizCompleted ? 'text-primary' : 'text-muted-foreground'}`} />
-              <CardTitle className={quizCompleted ? '' : 'text-muted-foreground'}>
-                Government Schemes
-              </CardTitle>
+              <Users className="h-12 w-12 text-muted-foreground mb-2" />
+              <CardTitle className="text-muted-foreground">Passion + Studies Support</CardTitle>
               <CardDescription>
-                NSP, PM-YASASVI & other government scholarships
+                Balances academics with hobbies, sports, or arts
               </CardDescription>
             </CardHeader>
             <CardContent>
-              {quizCompleted ? (
-                <Button className="w-full">
-                  Explore Schemes
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              ) : (
-                <Button variant="outline" disabled className="w-full">
-                  <Lock className="mr-2 h-4 w-4" />
-                  Complete Quiz First
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card 
-            className={`hover:shadow-elegant transition-shadow ${
-              quizCompleted ? 'cursor-pointer' : 'opacity-60'
-            }`}
-            onClick={quizCompleted ? () => navigate('/location-guide') : undefined}
-          >
-            <CardHeader>
-              <MapPin className={`h-12 w-12 mb-2 ${quizCompleted ? 'text-primary' : 'text-muted-foreground'}`} />
-              <CardTitle className={quizCompleted ? '' : 'text-muted-foreground'}>
-                Location Guide
-              </CardTitle>
-              <CardDescription>
-                Best Indian cities for your chosen course
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {quizCompleted ? (
-                <Button className="w-full">
-                  Find Best Cities
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              ) : (
-                <Button variant="outline" disabled className="w-full">
-                  <Lock className="mr-2 h-4 w-4" />
-                  Complete Quiz First
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-
-          <Card 
-            className={`hover:shadow-elegant transition-shadow ${
-              quizCompleted ? 'cursor-pointer' : 'opacity-60'
-            }`}
-            onClick={quizCompleted ? () => navigate('/entrance-exams') : undefined}
-          >
-            <CardHeader>
-              <FileText className={`h-12 w-12 mb-2 ${quizCompleted ? 'text-primary' : 'text-muted-foreground'}`} />
-              <CardTitle className={quizCompleted ? '' : 'text-muted-foreground'}>
-                Entrance Exam Prep
-              </CardTitle>
-              <CardDescription>
-                JEE, NEET, GATE & other competitive exams
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {quizCompleted ? (
-                <Button className="w-full">
-                  Start Preparation
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              ) : (
-                <Button variant="outline" disabled className="w-full">
-                  <Lock className="mr-2 h-4 w-4" />
-                  Complete Quiz First
-                </Button>
-              )}
+              <Button variant="outline" disabled className="w-full">
+                <Lock className="mr-2 h-4 w-4" />
+                Coming Soon
+              </Button>
             </CardContent>
           </Card>
 
           <Card className="opacity-60">
             <CardHeader>
-              <Briefcase className="h-12 w-12 text-muted-foreground mb-2" />
-              <CardTitle className="text-muted-foreground">Job Portal</CardTitle>
+              <Brain className="h-12 w-12 text-muted-foreground mb-2" />
+              <CardTitle className="text-muted-foreground">AI Stress Check</CardTitle>
               <CardDescription>
-                Government jobs, PSUs & private placements
+                Mood detection, relaxation tips, and counselor access
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button variant="outline" disabled className="w-full">
+                <Lock className="mr-2 h-4 w-4" />
+                Coming Soon
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="opacity-60">
+            <CardHeader>
+              <Users className="h-12 w-12 text-muted-foreground mb-2" />
+              <CardTitle className="text-muted-foreground">Parent Zone</CardTitle>
+              <CardDescription>
+                Simple guides and success stories for parents
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button variant="outline" disabled className="w-full">
+                <Lock className="mr-2 h-4 w-4" />
+                Coming Soon
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="opacity-60">
+            <CardHeader>
+              <Users className="h-12 w-12 text-muted-foreground mb-2" />
+              <CardTitle className="text-muted-foreground">Mentorship & Webinars</CardTitle>
+              <CardDescription>
+                Connects students with alumni, teachers, and experts
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button variant="outline" disabled className="w-full">
+                <Lock className="mr-2 h-4 w-4" />
+                Coming Soon
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="opacity-60">
+            <CardHeader>
+              <TrendingUp className="h-12 w-12 text-muted-foreground mb-2" />
+              <CardTitle className="text-muted-foreground">Smart Dashboard</CardTitle>
+              <CardDescription>
+                Personalized reminders, resources, and progress tracking
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -348,9 +292,9 @@ const Dashboard = () => {
           <Card className="opacity-60">
             <CardHeader>
               <Globe className="h-12 w-12 text-muted-foreground mb-2" />
-              <CardTitle className="text-muted-foreground">Study Abroad</CardTitle>
+              <CardTitle className="text-muted-foreground">Offline Mode</CardTitle>
               <CardDescription>
-                International opportunities for Indian students
+                Access core features with low or no internet
               </CardDescription>
             </CardHeader>
             <CardContent>
