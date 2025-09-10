@@ -1,1 +1,4 @@
 project_id = "wnuniejsnkwupgchfryc"
+
+[functions.recommend-course]
+verify_jwt = false
