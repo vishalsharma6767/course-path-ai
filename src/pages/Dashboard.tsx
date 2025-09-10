@@ -239,51 +239,93 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="opacity-60">
+          <Card 
+            className={`hover:shadow-elegant transition-shadow ${
+              quizCompleted ? 'cursor-pointer' : 'opacity-60'
+            }`}
+            onClick={quizCompleted ? () => navigate('/government-schemes') : undefined}
+          >
             <CardHeader>
-              <Shield className="h-12 w-12 text-muted-foreground mb-2" />
-              <CardTitle className="text-muted-foreground">Government Schemes</CardTitle>
+              <Shield className={`h-12 w-12 mb-2 ${quizCompleted ? 'text-primary' : 'text-muted-foreground'}`} />
+              <CardTitle className={quizCompleted ? '' : 'text-muted-foreground'}>
+                Government Schemes
+              </CardTitle>
               <CardDescription>
                 NSP, PM-YASASVI & other government scholarships
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" disabled className="w-full">
-                <Lock className="mr-2 h-4 w-4" />
-                Coming Soon
-              </Button>
+              {quizCompleted ? (
+                <Button className="w-full">
+                  Explore Schemes
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              ) : (
+                <Button variant="outline" disabled className="w-full">
+                  <Lock className="mr-2 h-4 w-4" />
+                  Complete Quiz First
+                </Button>
+              )}
             </CardContent>
           </Card>
 
-          <Card className="opacity-60">
+          <Card 
+            className={`hover:shadow-elegant transition-shadow ${
+              quizCompleted ? 'cursor-pointer' : 'opacity-60'
+            }`}
+            onClick={quizCompleted ? () => navigate('/location-guide') : undefined}
+          >
             <CardHeader>
-              <MapPin className="h-12 w-12 text-muted-foreground mb-2" />
-              <CardTitle className="text-muted-foreground">Location Guide</CardTitle>
+              <MapPin className={`h-12 w-12 mb-2 ${quizCompleted ? 'text-primary' : 'text-muted-foreground'}`} />
+              <CardTitle className={quizCompleted ? '' : 'text-muted-foreground'}>
+                Location Guide
+              </CardTitle>
               <CardDescription>
                 Best Indian cities for your chosen course
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" disabled className="w-full">
-                <Lock className="mr-2 h-4 w-4" />
-                Coming Soon
-              </Button>
+              {quizCompleted ? (
+                <Button className="w-full">
+                  Find Best Cities
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              ) : (
+                <Button variant="outline" disabled className="w-full">
+                  <Lock className="mr-2 h-4 w-4" />
+                  Complete Quiz First
+                </Button>
+              )}
             </CardContent>
           </Card>
 
-          <Card className="opacity-60">
+          <Card 
+            className={`hover:shadow-elegant transition-shadow ${
+              quizCompleted ? 'cursor-pointer' : 'opacity-60'
+            }`}
+            onClick={quizCompleted ? () => navigate('/entrance-exams') : undefined}
+          >
             <CardHeader>
-              <FileText className="h-12 w-12 text-muted-foreground mb-2" />
-              <CardTitle className="text-muted-foreground">Entrance Exam Prep</CardTitle>
+              <FileText className={`h-12 w-12 mb-2 ${quizCompleted ? 'text-primary' : 'text-muted-foreground'}`} />
+              <CardTitle className={quizCompleted ? '' : 'text-muted-foreground'}>
+                Entrance Exam Prep
+              </CardTitle>
               <CardDescription>
                 JEE, NEET, GATE & other competitive exams
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button variant="outline" disabled className="w-full">
-                <Lock className="mr-2 h-4 w-4" />
-                Coming Soon
-              </Button>
+              {quizCompleted ? (
+                <Button className="w-full">
+                  Start Preparation
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              ) : (
+                <Button variant="outline" disabled className="w-full">
+                  <Lock className="mr-2 h-4 w-4" />
+                  Complete Quiz First
+                </Button>
+              )}
             </CardContent>
           </Card>
 
