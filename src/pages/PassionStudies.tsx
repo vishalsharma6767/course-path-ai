@@ -8,12 +8,14 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { ArrowLeft, Heart, BookOpen, Music, Palette, Trophy, Camera, Clock, Target } from 'lucide-react';
+import PassionPlanningModal from '@/components/PassionPlanningModal';
 import type { User } from '@supabase/supabase-js';
 
 const PassionStudies = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [isPlanningModalOpen, setIsPlanningModalOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -339,7 +341,9 @@ const PassionStudies = () => {
                   </div>
 
                   <div className="flex gap-2 pt-4 border-t">
-                    <Button size="sm" className="flex-1">Get Started</Button>
+                    <Button size="sm" className="flex-1" onClick={() => setIsPlanningModalOpen(true)}>
+                      Get Personalized Plan
+                    </Button>
                     <Button variant="outline" size="sm">Resources</Button>
                   </div>
                 </CardContent>
@@ -357,12 +361,19 @@ const PassionStudies = () => {
               Get personalized guidance on combining your passion with academic excellence
             </p>
             <div className="flex gap-2 justify-center">
-              <Button>Book Consultation</Button>
+              <Button onClick={() => setIsPlanningModalOpen(true)}>
+                Create My Balance Plan
+              </Button>
               <Button variant="outline">Join Community</Button>
             </div>
           </CardContent>
         </Card>
       </div>
+
+      <PassionPlanningModal
+        isOpen={isPlanningModalOpen}
+        onClose={() => setIsPlanningModalOpen(false)}
+      />
     </div>
   );
 };

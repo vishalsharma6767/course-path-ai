@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, MapPin, Calendar, Users, TrendingUp, CheckCircle, Clock, Target } from 'lucide-react';
+import DetailedRoadmapModal from '@/components/DetailedRoadmapModal';
 import type { User } from '@supabase/supabase-js';
 
 const CareerRoadmaps = () => {
@@ -14,6 +15,8 @@ const CareerRoadmaps = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [selectedRoadmap, setSelectedRoadmap] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -260,7 +263,12 @@ const CareerRoadmaps = () => {
                 </div>
 
                 <div className="flex gap-2 pt-4 border-t">
-                  <Button size="sm">Get Detailed Plan</Button>
+                  <Button size="sm" onClick={() => {
+                    setSelectedRoadmap(roadmap);
+                    setIsModalOpen(true);
+                  }}>
+                    Get Detailed Plan
+                  </Button>
                   <Button variant="outline" size="sm">Find Colleges</Button>
                   <Button variant="outline" size="sm">Exam Resources</Button>
                 </div>
@@ -277,6 +285,18 @@ const CareerRoadmaps = () => {
           </div>
         )}
       </div>
+
+      {selectedRoadmap && (
+        <DetailedRoadmapModal
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setSelectedRoadmap(null);
+          }}
+          careerTitle={selectedRoadmap.title}
+          category={selectedRoadmap.category}
+        />
+      )}
     </div>
   );
 };
