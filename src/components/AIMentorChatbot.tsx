@@ -5,6 +5,8 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Bot, Send, X, MessageCircle, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import type { User as AuthUser } from '@supabase/supabase-js';
 
 interface Message {
   id: string;
@@ -26,7 +28,17 @@ const AIMentorChatbot = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    // Get current user
+    const getUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setUser(session?.user || null);
+    };
+    getUser();
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -72,7 +84,7 @@ const AIMentorChatbot = () => {
   };
 
   const handleSendMessage = async () => {
-    if (!inputMessage.trim()) return;
+    if (!inputMessage.trim() || isTyping) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -82,21 +94,54 @@ const AIMentorChatbot = () => {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const currentMessage = inputMessage;
     setInputMessage('');
     setIsTyping(true);
 
-    // Simulate AI thinking time
-    setTimeout(() => {
+    try {
+      // Call the AI mentor chat edge function
+      const { data, error } = await supabase.functions.invoke('ai-mentor-chat', {
+        body: {
+          message: currentMessage,
+          userId: user?.id,
+          context: {
+            isStudent: true,
+            platform: 'Catalyst Career Guidance'
+          }
+        },
+      });
+
+      if (error) throw error;
+
       const botResponse: Message = {
         id: (Date.now() + 1).toString(),
-        text: getAIResponse(inputMessage),
+        text: data.response || 'I apologize, but I encountered an issue generating a response. Please try asking your question again.',
         isBot: true,
         timestamp: new Date()
       };
       
       setMessages(prev => [...prev, botResponse]);
+    } catch (error) {
+      console.error('Error getting AI response:', error);
+      
+      // Fallback to local response
+      const fallbackResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        text: getAIResponse(currentMessage),
+        isBot: true,
+        timestamp: new Date()
+      };
+      
+      setMessages(prev => [...prev, fallbackResponse]);
+      
+      toast({
+        title: "Connection Issue",
+        description: "Using offline responses. Check your internet connection for full AI features.",
+        variant: "default",
+      });
+    } finally {
       setIsTyping(false);
-    }, 1500);
+    }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
