@@ -115,7 +115,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      create_ai_chat_response: {
+        Args: { user_context?: Json; user_message: string }
+        Returns: {
+          error_message: string
+          response: string
+          success: boolean
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
