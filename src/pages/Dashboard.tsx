@@ -1,104 +1,14 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
+import { DashboardLayout } from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { GraduationCap, BookOpen, Users, Trophy, Brain, LogOut, ArrowRight, Building, Award, TrendingUp, Lock, MapPin, FileText, Briefcase, Globe, Shield } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import type { User } from '@supabase/supabase-js';
-import AIMentorChatbot from '@/components/AIMentorChatbot';
+import { Button } from '@/components/ui/button';
+import { GraduationCap, ArrowRight, Building, Award, Users, TrendingUp } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [quizCompleted, setQuizCompleted] = useState(false);
   const navigate = useNavigate();
-  const { toast } = useToast();
-
-  useEffect(() => {
-    // Check current session
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        setUser(session.user);
-        
-        // Check if user has completed quiz
-        const { data: quizData } = await supabase
-          .from('quiz_results')
-          .select('id')
-          .eq('user_id', session.user.id)
-          .limit(1);
-        
-        setQuizCompleted(quizData && quizData.length > 0);
-      } else {
-        navigate('/');
-      }
-      setLoading(false);
-    };
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (event === 'SIGNED_OUT' || !session?.user) {
-          setUser(null);
-          navigate('/');
-        } else {
-          setUser(session.user);
-        }
-      }
-    );
-
-    checkSession();
-
-    return () => subscription.unsubscribe();
-  }, [navigate]);
-
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    toast({
-      title: "Logged out successfully",
-      description: "Come back soon to continue your course discovery!",
-    });
-  };
-
-  const startQuiz = () => {
-    navigate('/quiz');
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
-  if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b bg-white">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <GraduationCap className="h-8 w-8 text-primary" />
-            <h1 className="text-2xl font-bold gradient-primary bg-clip-text text-transparent">
-              Catalyst
-            </h1>
-          </div>
-          <div className="flex items-center space-x-4">
-            <span className="text-sm text-muted-foreground">
-              Welcome, {user.user_metadata?.name || user.email}
-            </span>
-            <Button variant="ghost" size="sm" onClick={handleLogout}>
-              <LogOut className="h-4 w-4 mr-2" />
-              Logout
-            </Button>
-          </div>
-        </div>
-      </header>
-
+    <DashboardLayout>
       <div className="container mx-auto px-4 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
@@ -108,164 +18,55 @@ const Dashboard = () => {
           </p>
         </div>
 
-
-        {/* Main Actions - Updated with unlock system */}
+        {/* Quick Access Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {/* AI Quiz Card */}
-          <Card 
-            className={`hover:shadow-elegant transition-shadow cursor-pointer ${
-              quizCompleted ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-200' : ''
-            }`} 
-            onClick={() => navigate('/quiz')}
-          >
+          <Card className="hover:shadow-elegant transition-shadow cursor-pointer" onClick={() => navigate('/quiz')}>
             <CardHeader>
-              <Brain className={`h-12 w-12 mb-2 ${quizCompleted ? 'text-green-600' : 'text-primary'}`} />
-              <CardTitle className={quizCompleted ? 'text-green-600' : ''}>
-                AI Aptitude Quiz {quizCompleted && '✓'}
-              </CardTitle>
+              <GraduationCap className="h-12 w-12 text-primary mb-2" />
+              <CardTitle>Take AI Quiz</CardTitle>
               <CardDescription>
-                {quizCompleted ? 'Quiz completed! View results' : 'Take our intelligent assessment to get personalized course recommendations'}
+                Start your personalized learning journey
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Button className="w-full">
-                {quizCompleted ? 'View Results' : 'Begin Assessment'}
+                Begin Assessment
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </CardContent>
           </Card>
 
-          {/* College Finder Card */}
-          <Card 
-            className={`hover:shadow-elegant transition-shadow ${
-              quizCompleted ? 'cursor-pointer' : 'opacity-60'
-            }`}
-            onClick={quizCompleted ? () => navigate('/colleges') : undefined}
-          >
+          <Card className="hover:shadow-elegant transition-shadow cursor-pointer" onClick={() => navigate('/colleges')}>
             <CardHeader>
-              <Building className={`h-12 w-12 mb-2 ${quizCompleted ? 'text-primary' : 'text-muted-foreground'}`} />
-              <CardTitle className={quizCompleted ? '' : 'text-muted-foreground'}>
-                College & Scholarship Finder
-              </CardTitle>
+              <Building className="h-12 w-12 text-primary mb-2" />
+              <CardTitle>Find Colleges</CardTitle>
               <CardDescription>
-                Nearby options with eligibility and deadlines
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {quizCompleted ? (
-                <Button className="w-full">
-                  Find Colleges & Scholarships
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              ) : (
-                <Button variant="outline" disabled className="w-full">
-                  <Lock className="mr-2 h-4 w-4" />
-                  Complete Quiz First
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-
-        </div>
-
-        {/* All Features Now Working */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          <Card className="hover:shadow-elegant transition-shadow cursor-pointer" onClick={() => navigate('/career-roadmaps')}>
-            <CardHeader>
-              <BookOpen className="h-12 w-12 text-primary mb-2" />
-              <CardTitle>Career Roadmaps</CardTitle>
-              <CardDescription>
-                Visual step-by-step paths for jobs, exams, and higher studies
+                Discover colleges and scholarship opportunities
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Button className="w-full">
-                Explore Roadmaps
+                Explore Options
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-elegant transition-shadow cursor-pointer" onClick={() => navigate('/passion-studies')}>
-            <CardHeader>
-              <Users className="h-12 w-12 text-primary mb-2" />
-              <CardTitle>Passion + Studies Support</CardTitle>
-              <CardDescription>
-                Balances academics with hobbies, sports, or arts
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button className="w-full">
-                Balance Life
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-elegant transition-shadow cursor-pointer" onClick={() => navigate('/stress-check')}>
-            <CardHeader>
-              <Brain className="h-12 w-12 text-primary mb-2" />
-              <CardTitle>AI Stress Check</CardTitle>
-              <CardDescription>
-                Mood detection, relaxation tips, and counselor access
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button className="w-full">
-                Check Wellness
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-elegant transition-shadow cursor-pointer" onClick={() => navigate('/parent-zone')}>
-            <CardHeader>
-              <Users className="h-12 w-12 text-primary mb-2" />
-              <CardTitle>Parent Zone</CardTitle>
-              <CardDescription>
-                Simple guides and success stories for parents
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button className="w-full">
-                Parent Resources
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-elegant transition-shadow cursor-pointer" onClick={() => navigate('/mentorship')}>
-            <CardHeader>
-              <Users className="h-12 w-12 text-primary mb-2" />
-              <CardTitle>Mentorship & Webinars</CardTitle>
-              <CardDescription>
-                Connects students with alumni, teachers, and experts
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button className="w-full">
-                Find Mentors
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </CardContent>
-          </Card>
-
-          <Card className="hover:shadow-elegant transition-shadow cursor-pointer" onClick={() => navigate('/smart-dashboard')}>
+          <Card className="hover:shadow-elegant transition-shadow cursor-pointer" onClick={() => navigate('/smart-timetable')}>
             <CardHeader>
               <TrendingUp className="h-12 w-12 text-primary mb-2" />
-              <CardTitle>Smart Dashboard</CardTitle>
+              <CardTitle>Smart Timetable</CardTitle>
               <CardDescription>
-                Personalized reminders, resources, and progress tracking
+                AI-powered study schedule generator
               </CardDescription>
             </CardHeader>
             <CardContent>
               <Button className="w-full">
-                View Analytics
+                Create Schedule
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </CardContent>
           </Card>
-
         </div>
 
         {/* Quick Stats */}
@@ -296,10 +97,7 @@ const Dashboard = () => {
           </Card>
         </div>
       </div>
-      
-      {/* AI Mentor Chatbot */}
-      <AIMentorChatbot />
-    </div>
+    </DashboardLayout>
   );
 };
 

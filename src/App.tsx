@@ -15,7 +15,9 @@ import StressCheck from "./pages/StressCheck";
 import ParentZone from "./pages/ParentZone";
 import MentorshipWebinars from "./pages/MentorshipWebinars";
 import SmartDashboard from "./pages/SmartDashboard";
-import OfflineMode from "./pages/OfflineMode";
+import SmartTimetable from "./pages/SmartTimetable";
+import AIMentor from "./pages/AIMentor";
+import ProgressTrackerPage from "./pages/ProgressTrackerPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -39,7 +41,9 @@ const App = () => (
           <Route path="/parent-zone" element={<ParentZone />} />
           <Route path="/mentorship" element={<MentorshipWebinars />} />
           <Route path="/smart-dashboard" element={<SmartDashboard />} />
-          <Route path="/offline-mode" element={<OfflineMode />} />
+          <Route path="/smart-timetable" element={<SmartTimetable />} />
+          <Route path="/ai-mentor" element={<AIMentor />} />
+          <Route path="/progress-tracker" element={<ProgressTrackerPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
