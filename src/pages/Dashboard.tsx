@@ -108,29 +108,6 @@ const Dashboard = () => {
           </p>
         </div>
 
-        {/* Progress Overview */}
-        <Card className="mb-8 gradient-hero text-white">
-          <CardHeader>
-            <CardTitle className="text-white">Your Journey Progress</CardTitle>
-            <CardDescription className="text-white/80">
-              Complete each step to get comprehensive course guidance
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span>Profile Setup</span>
-                <span className="text-sm bg-white/20 px-2 py-1 rounded">Complete</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span>AI Aptitude Quiz</span>
-                <span className="text-sm bg-white/20 px-2 py-1 rounded">Pending</span>
-              </div>
-              <Progress value={25} className="h-2 bg-white/20" />
-              <p className="text-sm text-white/80">1 of 4 steps completed</p>
-            </div>
-          </CardContent>
-        </Card>
 
         {/* Main Actions - Updated with unlock system */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
@@ -289,21 +266,6 @@ const Dashboard = () => {
             </CardContent>
           </Card>
 
-          <Card className="hover:shadow-elegant transition-shadow cursor-pointer" onClick={() => navigate('/offline-mode')}>
-            <CardHeader>
-              <Globe className="h-12 w-12 text-primary mb-2" />
-              <CardTitle>Offline Mode</CardTitle>
-              <CardDescription>
-                Access core features with low or no internet
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button className="w-full">
-                Go Offline
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </CardContent>
-          </Card>
         </div>
 
         {/* Quick Stats */}
