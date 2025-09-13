@@ -33,39 +33,52 @@ serve(async (req) => {
     if (openaiApiKey) {
       // Use OpenAI API for advanced responses
       try {
-        const systemPrompt = `You are an AI Career Mentor for Indian students, designed to provide personalized guidance on career planning, course selection, exam preparation, and educational opportunities in India.
+        const systemPrompt = `You are an expert AI Study Mentor and Career Advisor specifically designed for Indian students. You provide comprehensive, personalized guidance across all aspects of student life, academics, and career planning.
 
-Your expertise includes:
-- Indian education system (10th, 12th, UG, PG)
-- Career guidance and aptitude assessment
-- Entrance exams (JEE, NEET, GATE, CAT, UPSC, etc.)
-- Course and college recommendations
-- Scholarship and financial aid opportunities
-- Study abroad guidance
-- Skill development and industry trends
-- Mental health and stress management for students
-- Study techniques and time management
-- Smart timetable creation and planning
+🎓 **CORE EXPERTISE:**
+- **Academic Excellence**: Study techniques (Pomodoro, spaced repetition, active recall), subject mastery strategies, exam preparation
+- **Indian Education System**: Detailed knowledge of CBSE, ICSE, State boards, 10th/12th streams, UG/PG programs
+- **Competitive Exams**: JEE (Main/Advanced), NEET, GATE, CAT, CLAT, UPSC, SSC, Banking, Railways, State CETs
+- **Career Guidance**: Engineering, Medical, Commerce, Arts, Government jobs, Private sector, Entrepreneurship
+- **College Selection**: IITs, NITs, IIMs, Medical colleges, State universities, Private institutions
+- **Financial Planning**: Scholarships (NSP, PM-YASASVI, Merit-based), Education loans, Cost analysis
 
-Guidelines:
-- Be encouraging, supportive, and practical
-- Provide specific, actionable advice
-- Use simple, clear language with emojis for engagement
-- Consider Indian context, culture, and opportunities
-- Ask follow-up questions to better understand student needs
-- Provide realistic timelines and expectations
-- Include relevant resources and next steps
-- Suggest study techniques like Pomodoro, spaced repetition
-- Help with motivation and goal setting
-- Offer to create personalized timetables when appropriate
+🧠 **SPECIALIZED SUPPORT:**
+- **Study Psychology**: Motivation techniques, goal setting, overcoming procrastination, building discipline
+- **Mental Health**: Stress management, exam anxiety, work-life balance, confidence building  
+- **Time Management**: Smart timetables, productivity systems, habit formation
+- **Life Skills**: Communication, leadership, critical thinking, problem-solving
 
-When users ask about timetables or study planning:
-- Ask structured questions: subjects, available hours, activities, goals
-- Suggest both academic-only and balanced schedule options
-- Recommend proven study techniques
-- Provide motivational tips for consistency
+🇮🇳 **INDIAN CONTEXT MASTERY:**
+- Reservation policies (SC/ST/OBC/EWS quotas and processes)
+- Regional opportunities and state-specific programs
+- Cultural considerations and family dynamics in education
+- Current industry trends and job market insights
+- Government schemes and initiatives for students
 
-Student Context: ${context ? JSON.stringify(context) : 'No additional context provided'}`;
+**RESPONSE GUIDELINES:**
+✅ **Always provide:**
+- Practical, actionable steps the student can implement immediately
+- Multiple options and alternatives to avoid tunnel vision
+- Specific Indian examples, institutions, and resources
+- Encouragement balanced with realistic expectations
+- Follow-up questions to understand their specific situation better
+
+✅ **Format responses with:**
+- Clear structure using headings, bullet points, and emojis
+- Step-by-step guidance when appropriate
+- Relevant statistics or success stories when helpful
+- Next action items or recommended resources
+
+✅ **Tone & Approach:**
+- Warm, supportive, and understanding like a caring mentor
+- Professional yet approachable
+- Culturally sensitive to Indian values and family expectations
+- Motivational without being overly optimistic about challenges
+
+**Current Student Context:** ${context ? JSON.stringify(context) : 'General guidance requested'}
+
+Remember: Every student's journey is unique. Provide personalized advice that considers their specific circumstances, goals, and challenges. Be the mentor you wish you had during your own academic journey!`;
 
         const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
@@ -74,32 +87,41 @@ Student Context: ${context ? JSON.stringify(context) : 'No additional context pr
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            model: 'gpt-4.1-2025-04-14',
+            model: 'gpt-5-2025-08-07',
             messages: [
               { role: 'system', content: systemPrompt },
               { role: 'user', content: message }
             ],
-            max_completion_tokens: 500,
-            temperature: 0.7
+            max_completion_tokens: 800,
+            stream: false
           }),
         });
 
         if (!openaiResponse.ok) {
-          throw new Error(`OpenAI API error: ${openaiResponse.status}`);
+          const errorText = await openaiResponse.text();
+          console.error(`OpenAI API error ${openaiResponse.status}:`, errorText);
+          
+          if (openaiResponse.status === 429) {
+            // Rate limit exceeded - use enhanced fallback
+            console.log('Rate limit exceeded, using enhanced fallback response');
+            response = generateEnhancedIntelligentResponse(message, context);
+          } else {
+            throw new Error(`OpenAI API error: ${openaiResponse.status} - ${errorText}`);
+          }
+        } else {
+          const openaiData = await openaiResponse.json();
+          response = openaiData.choices[0]?.message?.content || 'I apologize, but I received an empty response. Please try asking your question again.';
+          console.log('OpenAI response generated successfully');
         }
-
-        const openaiData = await openaiResponse.json();
-        response = openaiData.choices[0].message.content;
-
-        console.log('OpenAI response generated successfully');
       } catch (openaiError) {
         console.error('OpenAI API error:', openaiError);
-        // Fallback to intelligent response
-        response = generateIntelligentResponse(message, context);
+        // Fallback to enhanced intelligent response
+        response = generateEnhancedIntelligentResponse(message, context);
       }
     } else {
-      // Fallback to intelligent response system
-      response = generateIntelligentResponse(message, context);
+      console.log('No OpenAI API key found, using enhanced fallback system');
+      // Fallback to enhanced intelligent response system
+      response = generateEnhancedIntelligentResponse(message, context);
     }
 
     // Log the interaction if userId is provided
@@ -138,50 +160,106 @@ Student Context: ${context ? JSON.stringify(context) : 'No additional context pr
   }
 });
 
-function generateIntelligentResponse(message: string, context: any): string {
+function generateEnhancedIntelligentResponse(message: string, context: any): string {
   const lowerMessage = message.toLowerCase();
+  console.log('Generating enhanced response for:', message.substring(0, 50) + '...');
   
-  // Career guidance responses
-  if (lowerMessage.includes('career') || lowerMessage.includes('job') || lowerMessage.includes('future')) {
-    return `I'd be happy to help you with career guidance! Based on your interests and strengths, I can suggest suitable career paths. 
+  // Career guidance responses - Enhanced with more specific advice
+  if (lowerMessage.includes('career') || lowerMessage.includes('job') || lowerMessage.includes('future') || lowerMessage.includes('what should i do')) {
+    return `🎯 **Career Guidance - Let's Find Your Perfect Path!**
 
-Some questions to help me guide you better:
-- What subjects do you enjoy most?
-- Are you more interested in technical fields, creative work, or helping people?
-- Do you prefer working with your hands, analyzing data, or leading teams?
+I'm excited to help you discover your ideal career! Every successful person started where you are now - with questions and curiosity.
 
-Popular career options for Indian students include:
-🔧 Engineering (Software, Mechanical, Civil, Electronics)
-🏥 Healthcare (Medicine, Nursing, Pharmacy, Physiotherapy)  
-💼 Business & Finance (MBA, CA, Banking, Marketing)
-🎨 Creative Fields (Design, Media, Architecture)
-🏛️ Government Services (IAS, IPS, Banking, Teaching)
+**🔍 Quick Career Assessment:**
+Let's understand YOU better first:
+• **Subjects you excel in?** (Math, Science, Languages, Arts)  
+• **Activities you enjoy?** (Problem-solving, helping others, creating, leading)
+• **Work environment preference?** (Office, outdoors, travel, remote)
+• **Long-term vision?** (Financial stability, social impact, innovation, entrepreneurship)
 
-Would you like me to explore any specific field with you?`;
+**🚀 Top Career Paths for Indian Students (2025):**
+
+**💻 Technology & IT:**
+• Software Development (₹6-50 LPA)
+• Data Science & AI (₹8-60 LPA)  
+• Cybersecurity (₹7-40 LPA)
+• Cloud Computing (₹6-45 LPA)
+
+**🏥 Healthcare & Life Sciences:**
+• Medicine/MBBS (₹8-100+ LPA)
+• Nursing & Allied Health (₹3-15 LPA)
+• Biotechnology (₹4-25 LPA)
+• Pharmacy (₹3-20 LPA)
+
+**🏗️ Engineering & Technical:**
+• Software Engineering (₹6-80 LPA)
+• Civil Engineering (₹3-20 LPA)
+• Mechanical Engineering (₹4-25 LPA)
+• Electronics (₹5-30 LPA)
+
+**💼 Business & Finance:**
+• Chartered Accountancy (₹6-50 LPA)
+• Investment Banking (₹10-100 LPA)
+• Digital Marketing (₹3-25 LPA)
+• Management Consulting (₹8-60 LPA)
+
+**🏛️ Government & Public Service:**
+• IAS/IPS/IFS (₹7-50 LPA + perks)
+• Banking (₹3-15 LPA)
+• Railways (₹3-12 LPA)
+• Defense Services (₹6-20 LPA + benefits)
+
+**❓ What resonates with you?** Share your interests and I'll give you a detailed roadmap with specific steps, colleges, and preparation strategies!`;
   }
 
-  // Exam preparation responses
-  if (lowerMessage.includes('exam') || lowerMessage.includes('jee') || lowerMessage.includes('neet') || lowerMessage.includes('preparation')) {
-    return `Exam preparation is crucial for your success! Here's my advice:
+  // Enhanced exam preparation responses with specific strategies
+  if (lowerMessage.includes('exam') || lowerMessage.includes('jee') || lowerMessage.includes('neet') || lowerMessage.includes('board') || lowerMessage.includes('competitive') || lowerMessage.includes('preparation') || lowerMessage.includes('study')) {
+    return `📚 **Exam Success Masterplan - Your Complete Strategy!**
 
-📚 **Study Strategy:**
-- Create a structured timetable with all subjects
-- Focus on NCERT books as your foundation
-- Practice previous year papers regularly
-- Take mock tests weekly
+Whether it's boards, JEE, NEET, or any competitive exam, I've got you covered with proven strategies that work!
 
-⏰ **Time Management:**
-- Study in 2-3 hour focused sessions
-- Take 15-minute breaks between sessions
-- Reserve time for revision and weak topics
+**🎯 THE WINNING FORMULA:**
 
-🎯 **Key Tips:**
-- Start early - consistency beats cramming
-- Join a good coaching institute if needed
-- Form study groups with serious students
-- Stay healthy with proper sleep and exercise
+**📅 Phase 1: Foundation Building (60% time)**
+• **NCERT Mastery**: Read every line 3 times minimum
+• **Concept Clarity**: Understand WHY, not just WHAT  
+• **Daily Practice**: 50 problems/questions per subject
+• **Doubt Resolution**: Same day - never accumulate!
 
-Which specific exam are you preparing for? I can provide more targeted advice based on your goal!`;
+**⚡ Phase 2: Skill Development (25% time)**
+• **Speed Building**: Time yourself on every problem
+• **Pattern Recognition**: Identify recurring question types
+• **Shortcut Techniques**: Learn smart methods for quick solving
+• **Mock Tests**: 2 full tests per week minimum
+
+**🔄 Phase 3: Mastery & Revision (15% time)**
+• **Error Analysis**: Maintain mistake diary
+• **Weak Topic Focus**: Extra 2 hours daily on weak areas
+• **Rapid Revision**: Complete syllabus in 7 days
+• **Stress Management**: Meditation + exercise daily
+
+**⏰ DAILY STUDY SCHEDULE TEMPLATE:**
+• **5:30-6:30 AM**: Toughest subject (peak brain power)
+• **7:00-9:00 AM**: Medium difficulty subject  
+• **10:00-12:00 PM**: Problem solving & practice
+• **2:00-4:00 PM**: Easy subject + revision
+• **5:00-7:00 PM**: Mock tests / previous years
+• **8:00-9:00 PM**: Review + next day planning
+
+**🏆 SUCCESS MULTIPLIERS:**
+✅ **Study Group**: Form with 3-4 serious students
+✅ **Coaching**: Join if self-study isn't working
+✅ **Mentorship**: Find a successful senior/teacher
+✅ **Technology**: Use apps for time tracking & tests
+✅ **Health**: 7+ hours sleep, daily exercise, proper nutrition
+
+**🎪 EXAM-SPECIFIC STRATEGIES:**
+
+**For JEE:** Physics (numerical mastery) + Chemistry (reaction mechanisms) + Math (speed + accuracy)
+**For NEET:** Biology (diagram-based) + Chemistry (NCERT focus) + Physics (concept application)
+**For Boards:** NCERT + sample papers + neat presentation
+
+**Which specific exam are you targeting?** Tell me and I'll create a personalized 90-day action plan for you! 🚀`;
   }
 
   // Stress and mental health responses
