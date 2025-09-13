@@ -3,10 +3,12 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Bot, Send, X, MessageCircle, User } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Bot, Send, X, MessageCircle, User, Calendar, BookOpen, Target, Clock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import type { User as AuthUser } from '@supabase/supabase-js';
+import SmartTimetableGenerator from './SmartTimetableGenerator';
 
 interface Message {
   id: string;
@@ -20,22 +22,34 @@ const AIMentorChatbot = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: 'Namaste! I\'m your AI mentor for Indian education and career guidance. I can help you with government schemes, Indian colleges, career paths, and educational opportunities in India. How can I assist you today?',
+      text: 'Namaste! 🙏 I\'m your AI mentor for Indian education and career guidance. I can help you with:\n\n📚 Study techniques (Pomodoro, spaced repetition)\n🎯 Career planning and goal setting\n📅 Smart timetable generation\n💡 Motivational guidance\n🏫 College and course selection\n📈 Progress tracking\n\nLet\'s start by understanding your needs! What subjects are you currently studying?',
       isBot: true,
       timestamp: new Date()
     }
   ]);
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [showTimetableGenerator, setShowTimetableGenerator] = useState(false);
+  const [userProfile, setUserProfile] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [user, setUser] = useState<AuthUser | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
-    // Get current user
+    // Get current user and profile
     const getUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setUser(session?.user || null);
+      
+      if (session?.user) {
+        // Fetch user profile for personalized responses
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('user_id', session.user.id)
+          .single();
+        setUserProfile(profile);
+      }
     };
     getUser();
   }, []);
@@ -50,6 +64,21 @@ const AIMentorChatbot = () => {
 
   const getAIResponse = (message: string): string => {
     const lowerMessage = message.toLowerCase();
+    
+    // Timetable and study planning responses
+    if (lowerMessage.includes('timetable') || lowerMessage.includes('schedule') || lowerMessage.includes('plan') || lowerMessage.includes('time management')) {
+      return `I'd love to help you create a personalized study timetable! 📅\n\n**Study Techniques I can suggest:**\n🍅 **Pomodoro Technique**: 25min focused study + 5min break\n📚 **Spaced Repetition**: Review material at increasing intervals\n🎯 **Active Recall**: Test yourself instead of just re-reading\n⭐ **Interleaving**: Mix different subjects in one session\n\n**For a personalized timetable, I need to know:**\n• What subjects are you studying?\n• How many hours can you study daily?\n• Do you have any extracurricular activities?\n• Any upcoming exams with specific dates?\n\nWould you like me to generate a smart timetable for you? Just tell me your subjects and available time!`;
+    }
+
+    // Study techniques and motivation
+    if (lowerMessage.includes('study technique') || lowerMessage.includes('how to study') || lowerMessage.includes('focus') || lowerMessage.includes('concentration')) {
+      return `Here are proven study techniques for Indian students! 🎯\n\n**🍅 Pomodoro Technique:**\n• Study for 25 minutes with full focus\n• Take a 5-minute break\n• After 4 sessions, take a 30-minute break\n• Perfect for maintaining concentration!\n\n**📚 Spaced Repetition:**\n• Review new material after 1 day, 3 days, 1 week, 2 weeks\n• Great for competitive exams like JEE/NEET\n• Use apps like Anki for flashcards\n\n**🎯 Active Learning:**\n• Teach concepts to someone else\n• Create mind maps and flowcharts\n• Practice with previous year papers\n• Join study groups for discussion\n\n**⏰ Time Blocking:**\n• Assign specific time slots to each subject\n• Include breaks and buffer time\n• Prioritize difficult topics during peak energy hours\n\nWant me to create a personalized study schedule for you?`;
+    }
+
+    // Motivational and goal-setting responses
+    if (lowerMessage.includes('motivation') || lowerMessage.includes('goal') || lowerMessage.includes('demotivated') || lowerMessage.includes('lazy')) {
+      return `I understand the ups and downs of student life! Let me help you stay motivated 💪\n\n**🎯 Goal Setting Framework:**\n• **Specific**: "Score 95% in Math board exam" not just "do well"\n• **Measurable**: Track daily/weekly progress\n• **Achievable**: Break big goals into smaller milestones\n• **Relevant**: Align with your career dreams\n• **Time-bound**: Set clear deadlines\n\n**💡 Daily Motivation Tips:**\n• Start with your easiest task to build momentum\n• Reward yourself after completing study sessions\n• Visualize your success and future career\n• Remember why you started this journey\n• Connect with classmates who inspire you\n\n**📈 Progress Tracking:**\n• Keep a study journal or use apps\n• Celebrate small wins daily\n• Review and adjust goals weekly\n• Share achievements with family/friends\n\nWhat specific goal are you working towards? Let me help you create an action plan!`;
+    }
     
     // Government schemes responses
     if (lowerMessage.includes('scholarship') || lowerMessage.includes('government scheme')) {
@@ -106,7 +135,10 @@ const AIMentorChatbot = () => {
           userId: user?.id,
           context: {
             isStudent: true,
-            platform: 'Catalyst Career Guidance'
+            platform: 'Catalyst Career Guidance',
+            userProfile: userProfile,
+            subjects: userProfile?.interests || [],
+            class: userProfile?.class
           }
         },
       });
@@ -155,7 +187,7 @@ const AIMentorChatbot = () => {
     return (
       <Button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all z-50"
+        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all z-50 bg-gradient-to-r from-primary to-primary-foreground"
         size="icon"
       >
         <MessageCircle className="h-6 w-6" />
@@ -168,10 +200,10 @@ const AIMentorChatbot = () => {
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-primary-foreground flex items-center justify-center">
               <Bot className="h-4 w-4 text-white" />
             </div>
-            <CardTitle className="text-lg">AI Education Mentor</CardTitle>
+            <CardTitle className="text-lg">AI Study Mentor</CardTitle>
           </div>
           <Button
             variant="ghost"
@@ -182,7 +214,47 @@ const AIMentorChatbot = () => {
             <X className="h-4 w-4" />
           </Button>
         </div>
-        <p className="text-sm text-muted-foreground">Get guidance on Indian education & careers</p>
+        <p className="text-sm text-muted-foreground">
+          Get guidance on Indian education, careers & smart timetables
+        </p>
+        {/* Quick Action Buttons */}
+        <div className="flex space-x-1 mt-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowTimetableGenerator(true)}
+            className="text-xs"
+          >
+            <Calendar className="h-3 w-3 mr-1" />
+            Timetable
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              const motivationMsg = "I need some motivation and study tips!";
+              setInputMessage(motivationMsg);
+              handleSendMessage();
+            }}
+            className="text-xs"
+          >
+            <Target className="h-3 w-3 mr-1" />
+            Motivate
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              const techniqueMsg = "What are the best study techniques?";
+              setInputMessage(techniqueMsg);
+              handleSendMessage();
+            }}
+            className="text-xs"
+          >
+            <BookOpen className="h-3 w-3 mr-1" />
+            Techniques
+          </Button>
+        </div>
       </CardHeader>
       
       <CardContent className="flex-1 flex flex-col p-4 pt-0 space-y-4">
@@ -245,9 +317,22 @@ const AIMentorChatbot = () => {
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Ask about Indian colleges, government schemes..."
+            placeholder="Ask about studies, timetables, motivation..."
             className="flex-1"
           />
+          <Dialog open={showTimetableGenerator} onOpenChange={setShowTimetableGenerator}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="icon">
+                <Calendar className="h-4 w-4" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Smart Timetable Generator</DialogTitle>
+              </DialogHeader>
+              <SmartTimetableGenerator user={user} />
+            </DialogContent>
+          </Dialog>
           <Button onClick={handleSendMessage} size="icon" disabled={!inputMessage.trim()}>
             <Send className="h-4 w-4" />
           </Button>

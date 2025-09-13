@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      chat_logs: {
+        Row: {
+          created_at: string
+          id: string
+          message: string
+          response: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message: string
+          response: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string
+          response?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       course_guidance: {
         Row: {
           career_options: Json | null
@@ -106,6 +130,101 @@ export type Database = {
           created_at?: string
           id?: string
           recommended_courses?: string[] | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      study_progress: {
+        Row: {
+          completed: boolean
+          completed_at: string | null
+          created_at: string
+          id: string
+          notes: string | null
+          scheduled_time: string
+          task_id: string
+          task_title: string
+          task_type: string
+          timetable_id: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          scheduled_time: string
+          task_id: string
+          task_title: string
+          task_type: string
+          timetable_id: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          notes?: string | null
+          scheduled_time?: string
+          task_id?: string
+          task_title?: string
+          task_type?: string
+          timetable_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "study_progress_timetable_id_fkey"
+            columns: ["timetable_id"]
+            isOneToOne: false
+            referencedRelation: "timetables"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      timetables: {
+        Row: {
+          activities: Json
+          created_at: string
+          duration_type: string
+          id: string
+          preferences: Json
+          schedule: Json
+          subjects: Json
+          title: string
+          total_hours: number
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          activities?: Json
+          created_at?: string
+          duration_type: string
+          id?: string
+          preferences?: Json
+          schedule?: Json
+          subjects?: Json
+          title: string
+          total_hours: number
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          activities?: Json
+          created_at?: string
+          duration_type?: string
+          id?: string
+          preferences?: Json
+          schedule?: Json
+          subjects?: Json
+          title?: string
+          total_hours?: number
+          type?: string
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
