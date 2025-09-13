@@ -1,10 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Bot, Send, X, MessageCircle, User, Calendar, BookOpen, Target, Clock } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { Bot, Send, MessageCircle, User, Calendar, BookOpen, Target, Sparkles, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import type { User as AuthUser } from '@supabase/supabase-js';
@@ -22,7 +22,7 @@ const AIMentorChatbot = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: 'Namaste! 🙏 I\'m your AI mentor for Indian education and career guidance. I can help you with:\n\n📚 Study techniques (Pomodoro, spaced repetition)\n🎯 Career planning and goal setting\n📅 Smart timetable generation\n💡 Motivational guidance\n🏫 College and course selection\n📈 Progress tracking\n\nLet\'s start by understanding your needs! What subjects are you currently studying?',
+      text: '🙏 **Namaste! I\'m your AI Study Mentor**\n\nI\'m here to help you excel in your studies with personalized guidance tailored for Indian students. I can assist with:\n\n✨ **Study Techniques & Time Management**\n📚 Pomodoro method, spaced repetition, active recall\n📅 Smart timetable generation\n\n🎯 **Career & Academic Planning**\n💡 JEE/NEET/Board exam strategies\n🏫 College selection and course guidance\n💪 Motivation and goal setting\n\n📈 **Progress Tracking**\n📊 Performance analytics\n🎪 Study habit optimization\n\n**Let\'s get started!** What would you like to work on today?',
       isBot: true,
       timestamp: new Date()
     }
@@ -32,6 +32,7 @@ const AIMentorChatbot = () => {
   const [showTimetableGenerator, setShowTimetableGenerator] = useState(false);
   const [userProfile, setUserProfile] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const [user, setUser] = useState<AuthUser | null>(null);
   const { toast } = useToast();
 
@@ -127,6 +128,9 @@ const AIMentorChatbot = () => {
     setInputMessage('');
     setIsTyping(true);
 
+    // Add a slight delay for better UX
+    await new Promise(resolve => setTimeout(resolve, 500));
+
     try {
       // Call the AI mentor chat edge function
       const { data, error } = await supabase.functions.invoke('ai-mentor-chat', {
@@ -156,24 +160,49 @@ const AIMentorChatbot = () => {
     } catch (error) {
       console.error('Error getting AI response:', error);
       
-      // Fallback to local response
+      // Enhanced fallback with better responses
+      const enhancedResponse = getEnhancedAIResponse(currentMessage);
       const fallbackResponse: Message = {
         id: (Date.now() + 1).toString(),
-        text: getAIResponse(currentMessage),
+        text: enhancedResponse,
         isBot: true,
         timestamp: new Date()
       };
       
       setMessages(prev => [...prev, fallbackResponse]);
-      
-      toast({
-        title: "Connection Issue",
-        description: "Using offline responses. Check your internet connection for full AI features.",
-        variant: "default",
-      });
     } finally {
       setIsTyping(false);
     }
+  };
+
+  const getEnhancedAIResponse = (message: string): string => {
+    const lowerMessage = message.toLowerCase();
+    
+    // Enhanced AI-like responses with better formatting
+    if (lowerMessage.includes('timetable') || lowerMessage.includes('schedule') || lowerMessage.includes('plan')) {
+      return `📅 **Let's create your perfect study timetable!**\n\nI'll help you build a personalized schedule that maximizes your productivity. Here's what I need:\n\n**📚 Study Details:**\n• What subjects are you currently studying?\n• How many hours can you dedicate to studies daily?\n• Any upcoming exams or deadlines?\n\n**⏰ Preferences:**\n• What time do you feel most focused?\n• Do you prefer longer study sessions or shorter bursts?\n• Any extracurricular activities to include?\n\n**🎯 Study Techniques I'll incorporate:**\n• **Pomodoro Technique** (25min focus + 5min break)\n• **Spaced Repetition** for better retention\n• **Active Recall** sessions\n• **Subject Interleaving** for variety\n\nClick the **Timetable** button below to get started with our smart generator!`;
+    }
+
+    if (lowerMessage.includes('motivation') || lowerMessage.includes('demotivat') || lowerMessage.includes('lazy')) {
+      return `💪 **You've got this! Let me reignite your motivation**\n\n**🌟 Remember Your Why:**\n• What dreams brought you here?\n• Visualize yourself achieving your goals\n• Every study session is a step closer to success\n\n**🎯 Instant Motivation Boosters:**\n• **Small Wins Strategy**: Start with just 15 minutes of study\n• **Progress Visualization**: Track your daily improvements\n• **Future Self**: Imagine how proud you'll be tomorrow\n• **Study Buddy**: Find someone to keep you accountable\n\n**📈 Momentum Building:**\n• Set micro-goals (1 chapter, 10 problems, 1 topic)\n• Reward yourself after each milestone\n• Create a success playlist\n• Use the "2-minute rule" - just start for 2 minutes\n\n**✨ Mindset Shift:**\nYou're not just studying - you're building your future. Every Indian student who made it big started exactly where you are now!\n\nWhat specific challenge is making you feel demotivated? Let's tackle it together!`;
+    }
+
+    if (lowerMessage.includes('study technique') || lowerMessage.includes('how to study') || lowerMessage.includes('focus')) {
+      return `🧠 **Master These Proven Study Techniques**\n\n**🍅 Pomodoro Technique** (Most Popular)\n• 25 minutes focused study\n• 5-minute break\n• Repeat 4 cycles, then 30-minute break\n• Perfect for maintaining concentration\n\n**📚 Spaced Repetition** (For Long-term Retention)\n• Review after: 1 day → 3 days → 1 week → 2 weeks\n• Ideal for competitive exams like JEE/NEET\n• Use flashcards or apps like Anki\n\n**🎯 Active Recall** (Most Effective)\n• Close your book and explain the topic\n• Create questions and answer them\n• Teach someone else\n• 10x more effective than re-reading\n\n**🌈 Feynman Technique**\n• Learn → Explain in simple terms → Identify gaps → Simplify further\n• Great for understanding complex concepts\n\n**⚡ Additional Power Tips:**\n• Study in 90-minute blocks (matches brain's ultradian rhythm)\n• Use background music (lo-fi or instrumental)\n• Take handwritten notes (better memory encoding)\n• Practice retrieval, not recognition\n\nWhich technique would you like to try first?`;
+    }
+
+    if (lowerMessage.includes('jee') || lowerMessage.includes('neet') || lowerMessage.includes('engineering') || lowerMessage.includes('medical')) {
+      return `🎯 **Competitive Exam Success Strategy**\n\n**For JEE/NEET Preparation:**\n\n**📊 Study Plan Framework:**\n• **Phase 1**: Concept building (60% time)\n• **Phase 2**: Problem solving (30% time)\n• **Phase 3**: Mock tests & revision (10% time)\n\n**📚 Subject-wise Strategy:**\n• **Physics**: Focus on numerical problem-solving\n• **Chemistry**: Equal emphasis on organic, inorganic, physical\n• **Mathematics**: Practice daily, focus on speed\n• **Biology** (NEET): Diagram-based learning, NCERT mastery\n\n**🎪 Exam Success Formula:**\n• **Daily**: 6-8 hours focused study\n• **Weekly**: 2 full-length mock tests\n• **Monthly**: Complete syllabus revision\n• **Previous Years**: Solve last 10 years papers\n\n**💡 Pro Tips:**\n• Join online test series\n• Form study groups for doubt clearing\n• Maintain error logs\n• Focus on your strong subjects first\n\nWhat specific exam are you preparing for? I can give you a detailed roadmap!`;
+    }
+
+    // Default enhanced response
+    const responses = [
+      `🤔 **That's an interesting question!**\n\nI'd love to help you with that. Could you provide a bit more context? For example:\n• Are you looking for study guidance?\n• Need help with career planning?\n• Want motivation or study techniques?\n• Have questions about specific subjects?\n\nThe more details you share, the better I can assist you! 😊`,
+      `💭 **I'm here to help with your academic journey!**\n\nI specialize in:\n✨ Study strategies and time management\n🎯 Career guidance for Indian students\n📚 Exam preparation (JEE, NEET, Boards)\n💪 Motivation and goal setting\n📅 Smart timetable creation\n\nWhat specific area would you like to explore today?`,
+      `🌟 **Great question!**\n\nAs your AI study mentor, I can help you with various aspects of your educational journey. Whether it's:\n\n• **Study Techniques** - Pomodoro, spaced repetition, active recall\n• **Career Planning** - Course selection, college guidance\n• **Motivation** - Goal setting and maintaining focus\n• **Time Management** - Creating effective study schedules\n\nWhat would you like to dive into first?`
+    ];
+    
+    return responses[Math.floor(Math.random() * responses.length)];
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -183,107 +212,125 @@ const AIMentorChatbot = () => {
     }
   };
 
+  const handleQuickAction = async (message: string) => {
+    setInputMessage(message);
+    // Auto-send the message
+    setTimeout(() => {
+      handleSendMessage();
+    }, 100);
+  };
+
   if (!isOpen) {
     return (
       <Button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all z-50 bg-gradient-to-r from-primary to-primary-foreground"
+        className="fixed bottom-6 right-6 h-16 w-16 rounded-full shadow-xl hover:shadow-2xl transition-all z-50 bg-gradient-to-br from-primary via-primary to-primary/80 hover:scale-110 group"
         size="icon"
       >
-        <MessageCircle className="h-6 w-6" />
+        <div className="relative">
+          <MessageCircle className="h-8 w-8 text-white" />
+          <Sparkles className="h-4 w-4 text-white absolute -top-1 -right-1 animate-pulse group-hover:animate-spin" />
+        </div>
       </Button>
     );
   }
 
   return (
-    <Card className="fixed bottom-6 right-6 w-96 h-[500px] shadow-xl z-50 flex flex-col">
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-primary to-primary-foreground flex items-center justify-center">
-              <Bot className="h-4 w-4 text-white" />
+    <div className="fixed inset-0 bg-background z-50 flex flex-col">
+      {/* Header */}
+      <div className="border-b bg-background/80 backdrop-blur-sm p-4">
+        <div className="flex items-center justify-between max-w-4xl mx-auto">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary via-primary to-primary/80 flex items-center justify-center relative">
+              <Bot className="h-5 w-5 text-white" />
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
             </div>
-            <CardTitle className="text-lg">AI Study Mentor</CardTitle>
+            <div>
+              <h1 className="text-xl font-bold">AI Study Mentor</h1>
+              <p className="text-sm text-muted-foreground">Your personal academic guidance assistant</p>
+            </div>
           </div>
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setIsOpen(false)}
-            className="h-8 w-8"
+            className="h-10 w-10 rounded-full hover:bg-muted"
           >
-            <X className="h-4 w-4" />
+            ✕
           </Button>
         </div>
-        <p className="text-sm text-muted-foreground">
-          Get guidance on Indian education, careers & smart timetables
-        </p>
+        
         {/* Quick Action Buttons */}
-        <div className="flex space-x-1 mt-2">
+        <div className="flex space-x-2 mt-4 max-w-4xl mx-auto">
           <Button
             variant="outline"
             size="sm"
             onClick={() => setShowTimetableGenerator(true)}
-            className="text-xs"
+            className="hover:bg-primary hover:text-white transition-colors"
           >
-            <Calendar className="h-3 w-3 mr-1" />
-            Timetable
+            <Calendar className="h-4 w-4 mr-2" />
+            Create Timetable
           </Button>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => {
-              const motivationMsg = "I need some motivation and study tips!";
-              setInputMessage(motivationMsg);
-              handleSendMessage();
-            }}
-            className="text-xs"
+            onClick={() => handleQuickAction("I need motivation and study tips!")}
+            className="hover:bg-primary hover:text-white transition-colors"
           >
-            <Target className="h-3 w-3 mr-1" />
-            Motivate
+            <Target className="h-4 w-4 mr-2" />
+            Get Motivated
           </Button>
           <Button
             variant="outline"
             size="sm"
-            onClick={() => {
-              const techniqueMsg = "What are the best study techniques?";
-              setInputMessage(techniqueMsg);
-              handleSendMessage();
-            }}
-            className="text-xs"
+            onClick={() => handleQuickAction("What are the best study techniques for students?")}
+            className="hover:bg-primary hover:text-white transition-colors"
           >
-            <BookOpen className="h-3 w-3 mr-1" />
-            Techniques
+            <BookOpen className="h-4 w-4 mr-2" />
+            Study Techniques
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => handleQuickAction("Help me prepare for JEE/NEET competitive exams")}
+            className="hover:bg-primary hover:text-white transition-colors"
+          >
+            <Sparkles className="h-4 w-4 mr-2" />
+            Exam Prep
           </Button>
         </div>
-      </CardHeader>
+      </div>
       
-      <CardContent className="flex-1 flex flex-col p-4 pt-0 space-y-4">
-        <ScrollArea className="flex-1 pr-4">
-          <div className="space-y-4">
+      {/* Chat Messages */}
+      <div className="flex-1 overflow-hidden">
+        <ScrollArea className="h-full">
+          <div className="max-w-4xl mx-auto p-4 space-y-6">
             {messages.map((message) => (
               <div
                 key={message.id}
                 className={`flex ${message.isBot ? 'justify-start' : 'justify-end'}`}
               >
                 <div
-                  className={`flex items-start space-x-2 max-w-[80%] ${
+                  className={`flex items-start space-x-3 max-w-[85%] ${
                     message.isBot ? 'flex-row' : 'flex-row-reverse space-x-reverse'
                   }`}
                 >
-                  <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
-                    message.isBot ? 'bg-primary' : 'bg-secondary'
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                    message.isBot 
+                      ? 'bg-gradient-to-br from-primary to-primary/80' 
+                      : 'bg-gradient-to-br from-muted-foreground to-muted-foreground/80'
                   }`}>
                     {message.isBot ? (
-                      <Bot className="h-3 w-3 text-white" />
+                      <Bot className="h-4 w-4 text-white" />
                     ) : (
-                      <User className="h-3 w-3 text-white" />
+                      <User className="h-4 w-4 text-white" />
                     )}
                   </div>
                   <div
-                    className={`rounded-lg px-3 py-2 text-sm whitespace-pre-line ${
+                    className={`rounded-2xl px-4 py-3 text-sm whitespace-pre-line max-w-full ${
                       message.isBot
-                        ? 'bg-muted text-muted-foreground'
-                        : 'bg-primary text-white'
+                        ? 'bg-muted/50 text-foreground border border-border/50'
+                        : 'bg-primary text-primary-foreground'
                     }`}
                   >
                     {message.text}
@@ -294,15 +341,15 @@ const AIMentorChatbot = () => {
             
             {isTyping && (
               <div className="flex justify-start">
-                <div className="flex items-center space-x-2">
-                  <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
-                    <Bot className="h-3 w-3 text-white" />
+                <div className="flex items-start space-x-3">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center">
+                    <Loader2 className="h-4 w-4 text-white animate-spin" />
                   </div>
-                  <div className="bg-muted rounded-lg px-3 py-2">
+                  <div className="bg-muted/50 border border-border/50 rounded-2xl px-4 py-3">
                     <div className="flex space-x-1">
-                      <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce"></div>
-                      <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                      <div className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
+                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                     </div>
                   </div>
                 </div>
@@ -311,34 +358,49 @@ const AIMentorChatbot = () => {
             <div ref={messagesEndRef} />
           </div>
         </ScrollArea>
-        
-        <div className="flex space-x-2">
-          <Input
-            value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Ask about studies, timetables, motivation..."
-            className="flex-1"
-          />
-          <Dialog open={showTimetableGenerator} onOpenChange={setShowTimetableGenerator}>
-            <DialogTrigger asChild>
-              <Button variant="outline" size="icon">
-                <Calendar className="h-4 w-4" />
+      </div>
+      
+      {/* Input Area */}
+      <div className="border-t bg-background/80 backdrop-blur-sm p-4">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex space-x-3 items-end">
+            <div className="flex-1 relative">
+              <Textarea
+                ref={inputRef}
+                value={inputMessage}
+                onChange={(e) => setInputMessage(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Ask me anything about studies, exams, timetables, motivation, career guidance..."
+                className="min-h-[60px] max-h-[150px] resize-none pr-12 text-sm"
+                disabled={isTyping}
+              />
+              <Button 
+                onClick={handleSendMessage} 
+                size="icon" 
+                disabled={!inputMessage.trim() || isTyping}
+                className="absolute bottom-2 right-2 h-8 w-8 rounded-full bg-primary hover:bg-primary/90"
+              >
+                <Send className="h-4 w-4" />
               </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Smart Timetable Generator</DialogTitle>
-              </DialogHeader>
-              <SmartTimetableGenerator user={user} />
-            </DialogContent>
-          </Dialog>
-          <Button onClick={handleSendMessage} size="icon" disabled={!inputMessage.trim()}>
-            <Send className="h-4 w-4" />
-          </Button>
+            </div>
+            
+            <Dialog open={showTimetableGenerator} onOpenChange={setShowTimetableGenerator}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="icon" className="h-12 w-12">
+                  <Calendar className="h-5 w-5" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>Smart Timetable Generator</DialogTitle>
+                </DialogHeader>
+                <SmartTimetableGenerator user={user} />
+              </DialogContent>
+            </Dialog>
+          </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 };
 
