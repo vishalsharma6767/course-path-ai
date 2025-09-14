@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
 
-// 💡 Message type
 interface Message {
   id: string;
   text: string;
@@ -14,7 +13,6 @@ const Chatbot: React.FC = () => {
   const [inputMessage, setInputMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
 
-  // 🚀 Send Message Function
   const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;
 
@@ -29,35 +27,25 @@ const Chatbot: React.FC = () => {
     setIsTyping(true);
 
     try {
-      // Call OpenAI API
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      const response = await fetch("/api/openai", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${process.env.NEXT_PUBLIC_OPENAI_API_KEY}`,
-        },
-        body: JSON.stringify({
-          model: "gpt-4o-mini", // you can use gpt-3.5-turbo if cheaper
-          messages: [
-            { role: "system", content: "You are an AI Study Mentor for students. Give clear, detailed, and helpful answers." },
-            { role: "user", content: currentMessage },
-          ],
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: currentMessage }),
       });
 
       const data = await response.json();
-      const aiText = data.choices?.[0]?.message?.content || "⚠️ No response from AI.";
+      if (!response.ok) throw new Error(data.error || "Request failed");
 
       // Add AI reply
       setMessages((prev) => [
         ...prev,
-        { id: (Date.now() + 1).toString(), text: aiText, isBot: true, timestamp: new Date() },
+        { id: (Date.now() + 1).toString(), text: data.reply, isBot: true, timestamp: new Date() },
       ]);
     } catch (error) {
       console.error("Error fetching AI response:", error);
       setMessages((prev) => [
         ...prev,
-        { id: (Date.now() + 2).toString(), text: "⚠️ Sorry, I couldn’t get an answer right now.", isBot: true, timestamp: new Date() },
+        { id: (Date.now() + 2).toString(), text: "⚠️ Sorry, I couldn’t get an answer.", isBot: true, timestamp: new Date() },
       ]);
     } finally {
       setIsTyping(false);
@@ -66,7 +54,7 @@ const Chatbot: React.FC = () => {
 
   return (
     <div className="flex flex-col w-full h-screen bg-gray-100 p-4">
-      {/* Chat Messages */}
+      {/* Chat window */}
       <div className="flex-1 overflow-y-auto space-y-2 p-2 border rounded bg-white">
         {messages.map((msg) => (
           <div
@@ -84,7 +72,7 @@ const Chatbot: React.FC = () => {
         {isTyping && <p className="text-sm text-gray-500">🤖 Typing...</p>}
       </div>
 
-      {/* Input Box */}
+      {/* Input */}
       <div className="mt-2 flex gap-2">
         <input
           type="text"
