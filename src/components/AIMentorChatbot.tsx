@@ -1,4 +1,3 @@
-"use client";
 import React, { useState } from "react";
 
 interface Message {
@@ -18,7 +17,6 @@ const Chatbot: React.FC = () => {
 
     const currentMessage = inputMessage;
 
-    // Add user message
     setMessages((prev) => [
       ...prev,
       { id: Date.now().toString(), text: currentMessage, isBot: false, timestamp: new Date() },
@@ -27,25 +25,35 @@ const Chatbot: React.FC = () => {
     setIsTyping(true);
 
     try {
-      const response = await fetch("/api/openai", {
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: currentMessage }),
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`, // ✅ Vite way
+        },
+        body: JSON.stringify({
+          model: "gpt-3.5-turbo",
+          messages: [
+            { role: "system", content: "You are an AI Study Mentor for students." },
+            { role: "user", content: currentMessage },
+          ],
+        }),
       });
 
       const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Request failed");
+      console.log("AI Raw Response:", data);
 
-      // Add AI reply
+      const aiReply = data.choices?.[0]?.message?.content || "⚠️ No response from AI";
+
       setMessages((prev) => [
         ...prev,
-        { id: (Date.now() + 1).toString(), text: data.reply, isBot: true, timestamp: new Date() },
+        { id: (Date.now() + 1).toString(), text: aiReply, isBot: true, timestamp: new Date() },
       ]);
-    } catch (error) {
-      console.error("Error fetching AI response:", error);
+    } catch (err) {
+      console.error("Error:", err);
       setMessages((prev) => [
         ...prev,
-        { id: (Date.now() + 2).toString(), text: "⚠️ Sorry, I couldn’t get an answer.", isBot: true, timestamp: new Date() },
+        { id: (Date.now() + 2).toString(), text: "⚠️ Failed to connect to AI.", isBot: true, timestamp: new Date() },
       ]);
     } finally {
       setIsTyping(false);
@@ -54,7 +62,7 @@ const Chatbot: React.FC = () => {
 
   return (
     <div className="flex flex-col w-full h-screen bg-gray-100 p-4">
-      {/* Chat window */}
+      {/* Chat Messages */}
       <div className="flex-1 overflow-y-auto space-y-2 p-2 border rounded bg-white">
         {messages.map((msg) => (
           <div
@@ -94,3 +102,4 @@ const Chatbot: React.FC = () => {
 };
 
 export default Chatbot;
+
