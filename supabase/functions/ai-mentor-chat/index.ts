@@ -1,73 +1,82 @@
-async function generateEnhancedIntelligentResponse(message: string, context: any, openaiApiKey?: string): Promise<string> {
-  const lowerMessage = message.toLowerCase();
-  console.log('Generating enhanced response for:', message.substring(0, 50) + '...');
+import { serve } from "https://deno.land/std@0.203.0/http/server.ts";
 
-  // --- Career Guidance ---
-  if (lowerMessage.includes('career') || lowerMessage.includes('job') || lowerMessage.includes('future') || lowerMessage.includes('what should i do')) {
-    return `🎯 **Career Guidance - Let's Find Your Perfect Path!**
+serve(async (req) => {
+  try {
+    const { message } = await req.json();
+    const lowerMessage = message.toLowerCase();
+    console.log('Generating enhanced response for:', message.substring(0, 50) + '...');
 
-[... keep your detailed career guidance text here ...]`;
-  }
+    // --- Career Guidance ---
+    if (lowerMessage.includes('career') || lowerMessage.includes('job') || lowerMessage.includes('future') || lowerMessage.includes('what should i do')) {
+      return new Response(`🎯 **Career Guidance - Let's Find Your Perfect Path!**
 
-  // --- Exam Preparation ---
-  if (lowerMessage.includes('exam') || lowerMessage.includes('jee') || lowerMessage.includes('neet') || lowerMessage.includes('board') || lowerMessage.includes('competitive') || lowerMessage.includes('preparation') || lowerMessage.includes('study')) {
-    return `📚 **Exam Success Masterplan - Your Complete Strategy!**
-
-[... keep your detailed exam preparation text here ...]`;
-  }
-
-  // --- Stress & Mental Health ---
-  if (lowerMessage.includes('stress') || lowerMessage.includes('anxiety') || lowerMessage.includes('pressure') || lowerMessage.includes('worried')) {
-    return `🧘 **Stress Management Plan**
-
-[... keep your stress response here ...]`;
-  }
-
-  // --- College / Course Selection ---
-  if (lowerMessage.includes('college') || lowerMessage.includes('course') || lowerMessage.includes('stream') || lowerMessage.includes('subject')) {
-    return `🎓 **Course & College Decision Guide**
-
-[... keep your college response here ...]`;
-  }
-
-  // --- Confusion / Help ---
-  if (lowerMessage.includes('help') || lowerMessage.includes('confused') || lowerMessage.includes('don\'t know')) {
-    return `🌟 **Don’t worry, I’m here for you!**
-
-[... keep your help response here ...]`;
-  }
-
-  // --- Default Response with API Call ---
-  if (openaiApiKey) {
-    try {
-      console.log("Falling back to OpenAI API for default response...");
-      const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${openaiApiKey}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini',  // stable lightweight model
-          messages: [
-            { role: 'system', content: "You are a friendly AI mentor for Indian students. Provide detailed, practical, and motivating advice." },
-            { role: 'user', content: message }
-          ],
-          max_tokens: 600,
-        }),
-      });
-
-      if (openaiResponse.ok) {
-        const data = await openaiResponse.json();
-        return data.choices[0]?.message?.content || "I’m here, but didn’t get a proper response. Try rephrasing your question.";
-      }
-    } catch (err) {
-      console.error("OpenAI default response error:", err);
+[... keep your detailed career guidance text here ...]`, { headers: { "Content-Type": "text/plain" } });
     }
-  }
 
-  // --- Final Static Fallback (if API also fails) ---
-  return `🌟 **Hello! I’m your AI Mentor & Career Guide** 🌟  
+    // --- Exam Preparation ---
+    if (lowerMessage.includes('exam') || lowerMessage.includes('jee') || lowerMessage.includes('neet') || lowerMessage.includes('board') || lowerMessage.includes('competitive') || lowerMessage.includes('preparation') || lowerMessage.includes('study')) {
+      return new Response(`📚 **Exam Success Masterplan - Your Complete Strategy!**
+
+[... keep your detailed exam preparation text here ...]`, { headers: { "Content-Type": "text/plain" } });
+    }
+
+    // --- Stress & Mental Health ---
+    if (lowerMessage.includes('stress') || lowerMessage.includes('anxiety') || lowerMessage.includes('pressure') || lowerMessage.includes('worried')) {
+      return new Response(`🧘 **Stress Management Plan**
+
+[... keep your stress response here ...]`, { headers: { "Content-Type": "text/plain" } });
+    }
+
+    // --- College / Course Selection ---
+    if (lowerMessage.includes('college') || lowerMessage.includes('course') || lowerMessage.includes('stream') || lowerMessage.includes('subject')) {
+      return new Response(`🎓 **Course & College Decision Guide**
+
+[... keep your college response here ...]`, { headers: { "Content-Type": "text/plain" } });
+    }
+
+    // --- Confusion / Help ---
+    if (lowerMessage.includes('help') || lowerMessage.includes('confused') || lowerMessage.includes('don\'t know')) {
+      return new Response(`🌟 **Don’t worry, I’m here for you!**
+
+[... keep your help response here ...]`, { headers: { "Content-Type": "text/plain" } });
+    }
+
+    // --- Default Response using VITE_GEN_API_KEY ---
+    const apiKey = Deno.env.get("VITE_GEN_API_KEY"); // Use your Vite env key
+    if (apiKey) {
+      try {
+        console.log("Falling back to Gemini API using VITE_GEN_API_KEY...");
+        const response = await fetch(
+          "https://api.generativeai.google/v1beta2/models/text-bison-001:generate",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${apiKey}`,
+            },
+            body: JSON.stringify({
+              prompt: message,
+              max_output_tokens: 600,
+            }),
+          }
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          const reply = data?.candidates?.[0]?.content;
+          if (reply) {
+            return new Response(reply, { headers: { "Content-Type": "text/plain" } });
+          }
+        } else {
+          console.error("Gemini API response not OK:", response.status, await response.text());
+        }
+      } catch (err) {
+        console.error("Gemini API call error:", err);
+      }
+    }
+
+    // --- Final Static Fallback ---
+    return new Response(`🌟 **Hello! I’m your AI Mentor & Career Guide** 🌟  
 
 I’m here to provide **personalized support** for your education, career, and life journey.  
 
@@ -76,5 +85,11 @@ I’m here to provide **personalized support** for your education, career, and l
 🧠 Mindset → Motivation, stress management, confidence  
 💼 Skills → AI, coding, design, business, communication  
 
-✅ Tell me about yourself (school/college/job, your interests), and I’ll create a **step-by-step plan** just for you 🚀`;
-}
+✅ Tell me about yourself (school/college/job, your interests), and I’ll create a **step-by-step plan** just for you 🚀`, { headers: { "Content-Type": "text/plain" } });
+
+  } catch (err) {
+    console.error("Function error:", err);
+    return new Response(JSON.stringify({ error: "Something went wrong" }), { status: 500 });
+  }
+});
+
