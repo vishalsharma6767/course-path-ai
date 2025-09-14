@@ -17,6 +17,7 @@ const Chatbot: React.FC = () => {
 
     const currentMessage = inputMessage;
 
+    // Add user message to chat
     setMessages((prev) => [
       ...prev,
       { id: Date.now().toString(), text: currentMessage, isBot: false, timestamp: new Date() },
@@ -25,25 +26,19 @@ const Chatbot: React.FC = () => {
     setIsTyping(true);
 
     try {
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      // Call Supabase Function endpoint instead of OpenAI
+      const response = await fetch("https://YOUR_SUPABASE_URL/functions/v1/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_OPENAI_API_KEY}`, // ✅ Vite way
         },
-        body: JSON.stringify({
-          model: "gpt-3.5-turbo",
-          messages: [
-            { role: "system", content: "You are an AI Study Mentor for students." },
-            { role: "user", content: currentMessage },
-          ],
-        }),
+        body: JSON.stringify({ message: currentMessage }),
       });
 
-      const data = await response.json();
+      const data = await response.text(); // Supabase function returns plain text
       console.log("AI Raw Response:", data);
 
-      const aiReply = data.choices?.[0]?.message?.content || "⚠️ No response from AI";
+      const aiReply = data || "⚠️ No response from AI";
 
       setMessages((prev) => [
         ...prev,
